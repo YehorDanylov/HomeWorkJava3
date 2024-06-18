@@ -1,0 +1,62 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+}
+
+subprojects {
+    apply plugin: 'java'
+
+    java {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    task runMainModules(type: Exec) {
+        description = 'Run main modules'
+        dependsOn assemble
+
+        // Запускаємо модуль 1
+        doFirst {
+            println "Running Main1..."
+        }
+        commandLine 'java', '-cp', sourceSets.main.runtimeClasspath.asPath, 'org.example.Main1'
+
+        // Запускаємо модуль 2
+        doFirst {
+            println "Running Main2..."
+        }
+        commandLine 'java', '-cp', sourceSets.main.runtimeClasspath.asPath, 'org.example.Main2'
+
+        doFirst {
+            println "Running Main3..."
+        }
+        commandLine 'java', '-cp', sourceSets.main.runtimeClasspath.asPath, 'org.example.Main3'
+
+    }
+
+
+// Додамо завдання runMainModules до загального build
+    build.dependsOn runMainModules
+
+// Завдання для перевірки наявності файлу
+    task checkFileExists(type: Exec) {
+        description = 'Check if specific file exists'
+        commandLine "cmd", "/c", "if exist path\\to\\your\\file.txt echo File exists"
+    }
+
+// Завдання для збирання проєкту (assemble)
+    task assembleProject(type: GradleBuild) {
+        description = 'Assemble the entire project'
+        tasks = ['assemble']
+    }
+
+// залежності між задачами
+    check.dependsOn checkFileExists
+}
